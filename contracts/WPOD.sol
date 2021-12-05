@@ -26,7 +26,7 @@ contract WPOD is
 
   uint256 internal _CACHED_HARVESTABLE_;
   uint256 internal _TOTAL_PODS_;
-  uint256 internal _TOTAL_HARVETABLE_PODS_;
+  uint256 internal _TOTAL_HARVESTABLE_PODS_;
   uint256 internal _TOTAL_SLOTS_;
 
   // ============ Constructor ============
@@ -79,19 +79,19 @@ contract WPOD is
     BEANSTALK.transferPlot(msg.sender, address(this), plotId, start, end);
 
     // Calculate slot cost for the plot.
-    // TODO: Ensure $BEAN is token1, or switch numerator and denominator below
-    uint256 reserve0;
-    uint256 reserve1;
-    (reserve0, reserve1,) = BEAN_ETH_AMM.getReserves();
-    uint256 cost = reserve0 / reserve1;
+    // TODO: Use TWAP instead of price snapshot here
+    (uint256 r0, uint256 r1,) = BEAN_ETH_AMM.getReserves(); 
+    uint256 beanPrice = r0 / r1; // TODO: Ensure $BEAN is token1, or switch numerator and denominator
+    (r0, r1,) = WPOD_ETH_AMM.getReserves(); 
+    uint256 wpodPrice = r0 / r1; // TODO: Ensure $WPOD is token1, or switch numerator and denominator
+    uint256 slotCost = ((_TOTAL_PODS_ - harvestable) * beanPrice - this.totalSupply() * wpodPrice) / _TOTAL_SLOTS_;
 
-    // TODO: Calculate net value of the plot.
+    // Calculate net value of the plot.
     uint256 numSlots = ((end ** 2) + end) / 2 - ((start - 1) ** 2 + start - 1) / 2 - harvestable * (end - start);
-    uint256 plotValue = cost * numSlots;
+    uint256 netValue = (end - start + 1) * beanPrice - numSlots * slotCost;
 
-    // TODO: Calculate net value of existing wrapped plots.
-    // TODO: Mint an ERC-20 balance to the sender.
-
+    // Mint an ERC-20 balance to the sender.
+    this.transfer(msg.sender, netValue / wpodPrice);
   }
 
   /**
