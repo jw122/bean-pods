@@ -26,14 +26,19 @@ function App() {
     }
   }
 
+  const plotIds = [100, 101, 110];
   return (
     <div className="App">
       <header className="App-header">
-        You own plots: 100,101,103
-        <input
-          onChange={(e) => setPlotId(e.target.value)}
-          placeholder="Plot ID"
-        />
+        You own plots: 
+        { plotIds.map(pid => (
+          <div>
+            <input
+              onChange={(e) => setPlotId(e.target.value)}
+              type="radio" id={`plot_${pid}`} name="plotId" value={pid} />
+            <label for={plotId}>{pid}</label>
+          </div>
+        ))}
         <button onClick={wrapPlot}>Wrap Plot</button>
       </header>
     </div>
