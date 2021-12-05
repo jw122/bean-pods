@@ -4,7 +4,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IBeanstalk } from "./interfaces/IBeanstalk.sol";
-import { IUniswap } from "./interfaces/IUniswap.sol";
+import { IUniswapV2Pair } from "./interfaces/IUniswapV2Pair.sol";
 
 contract WPOD is
   ERC20,
@@ -16,11 +16,11 @@ contract WPOD is
   string internal constant SYMBOL = "wPOD";
 
   IBeanstalk public immutable BEANSTALK;
-  IUniswap public immutable BEAN_ETH_AMM;
+  IUniswapV2Pair public immutable BEAN_ETH_AMM;
 
   // TODO: Can we calculate the AMM pool address in advance? Should we?
   //       For demo purposes, can set this via an admin function...
-  IUniswap public WPOD_ETH_AMM; // TODO: Make immutable.
+  IUniswapV2Pair public WPOD_ETH_AMM; // TODO: Make immutable.
 
   // ============ Storage ============
 
@@ -33,8 +33,8 @@ contract WPOD is
 
   constructor(
     IBeanstalk beanstalk,
-    IUniswap beanEthAmm,
-    IUniswap wpodEthAmm
+    IUniswapV2Pair beanEthAmm,
+    IUniswapV2Pair wpodEthAmm
   )
     ERC20(
       NAME,
@@ -49,7 +49,7 @@ contract WPOD is
   // ============ Demo Functions ============
 
   function setWpodEthAmm(
-    IUniswap wpodEthAmm
+    IUniswapV2Pair wpodEthAmm
   )
     external
     onlyOwner
@@ -78,10 +78,20 @@ contract WPOD is
     // Transfer the plot (or sub-plot) from the user.
     BEANSTALK.transferPlot(msg.sender, address(this), plotId, start, end);
 
-    // TODO: Calculate slot cost for the plot.
+    // Calculate slot cost for the plot.
+    // TODO: Ensure $BEAN is token1, or switch numerator and denominator below
+    uint256 reserve0;
+    uint256 reserve1;
+    (reserve0, reserve1,) = BEAN_ETH_AMM.getReserves();
+    uint256 cost = reserve0 / reserve1;
+
     // TODO: Calculate net value of the plot.
+    uint256 numSlots = ((end ** 2) + end) / 2 - ((start - 1) ** 2 + start - 1) / 2 - harvestable * (end - start);
+    uint256 plotValue = cost * numSlots;
+
     // TODO: Calculate net value of existing wrapped plots.
     // TODO: Mint an ERC-20 balance to the sender.
+
   }
 
   /**
