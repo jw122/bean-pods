@@ -1,11 +1,14 @@
 pragma solidity ^0.8.10;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+
 import { IBeanstalk } from "./interfaces/IBeanstalk.sol";
 import { IUniswap } from "./interfaces/IUniswap.sol";
 
 contract WPOD is
-  ERC20
+  ERC20,
+  Ownable // TODO: Only need this for demo purposes.
 {
   // ============ Constants ============
 
@@ -17,11 +20,11 @@ contract WPOD is
 
   // TODO: Can we calculate the AMM pool address in advance? Should we?
   //       For demo purposes, can set this via an admin function...
-  IUniswap public immutable WPOD_ETH_AMM;
+  IUniswap public WPOD_ETH_AMM; // TODO: Make immutable.
 
   // ============ Storage ============
 
-  uint256 internal _CACHED_HARVESTED_COUNT_;
+  uint256 internal _CACHED_HARVESTABLE_;
   uint256 internal _TOTAL_PODS_;
   uint256 internal _TOTAL_HARVETABLE_PODS_;
   uint256 internal _TOTAL_SLOTS_;
@@ -43,6 +46,17 @@ contract WPOD is
     WPOD_ETH_AMM = wpodEthAmm;
   }
 
+  // ============ Demo Functions ============
+
+  function setWpodEthAmm(
+    IUniswap wpodEthAmm
+  )
+    external
+    onlyOwner
+  {
+    WPOD_ETH_AMM = wpodEthAmm;
+  }
+
   // ============ External Functions ============
 
   /**
@@ -58,8 +72,11 @@ contract WPOD is
     external
     returns (uint256)
   {
+    // Refresh the
     updateTotalSlots();
-    // TODO: Call BEANSTALK.transferPlot().
+
+    // Transfer
+    BEANSTALK.transferPlot(msg.sender, address(this), plotId, start, end);
     // TODO: Calculate slot cost for the plot.
     // TODO: Calculate net value of the plot.
     // TODO: Calculate net value of existing wrapped plots.
@@ -101,15 +118,15 @@ contract WPOD is
   function updateTotalSlots()
     internal
   {
-    uint256 harvested = 0; // TODO: call beanstalk
-    uint256 cachedHarvested = _CACHED_HARVESTED_COUNT_;
-    if (harvested == cachedHarvested) {
+    uint256 harvestable = BEANSTALK.harvestableIndex();
+    uint256 cachedHarvestable = _CACHED_HARVESTABLE_;
+    if (harvestable == cachedHarvestable) {
       return;
     }
 
     // TODO: Iterate over plots in order.
     //       Reduce total slots.
 
-    _CACHED_HARVESTED_COUNT_ = harvested;
+    _CACHED_HARVESTABLE_ = harvestable;
   }
 }
