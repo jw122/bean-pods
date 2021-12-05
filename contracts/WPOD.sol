@@ -125,7 +125,7 @@ contract WPOD is
     uint256 harvestable = BEANSTALK.harvestableIndex();
     uint256 cachedHarvestable = _CACHED_HARVESTABLE_;
     if (harvestable == cachedHarvestable) {
-      return;
+      return cachedHarvestable;
     }
 
     // TODO: Iterate over plots in order.
