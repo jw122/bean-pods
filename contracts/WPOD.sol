@@ -72,11 +72,12 @@ contract WPOD is
     external
     returns (uint256)
   {
-    // Refresh the
-    updateTotalSlots();
+    // Refresh the total slot count.
+    uint256 harvestable = updateTotalSlots();
 
-    // Transfer
+    // Transfer the plot (or sub-plot) from the user.
     BEANSTALK.transferPlot(msg.sender, address(this), plotId, start, end);
+
     // TODO: Calculate slot cost for the plot.
     // TODO: Calculate net value of the plot.
     // TODO: Calculate net value of existing wrapped plots.
@@ -94,7 +95,9 @@ contract WPOD is
     external
     returns (uint256)
   {
-    updateTotalSlots();
+    // Refresh the total slot count.
+    uint256 harvestable = updateTotalSlots();
+
     // TODO: Calculate slot cost for the requested plot(s).
     // TODO: Calculate net value of the requested plot(s).
     // TODO: Calculate net value of existing wrapped plots.
@@ -117,6 +120,7 @@ contract WPOD is
 
   function updateTotalSlots()
     internal
+    returns (uint256)
   {
     uint256 harvestable = BEANSTALK.harvestableIndex();
     uint256 cachedHarvestable = _CACHED_HARVESTABLE_;
@@ -128,5 +132,6 @@ contract WPOD is
     //       Reduce total slots.
 
     _CACHED_HARVESTABLE_ = harvestable;
+    return harvestable;
   }
 }
