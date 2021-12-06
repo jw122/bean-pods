@@ -3,7 +3,7 @@ Instant liquidity for buying and selling [Beanstalk Pods](https://bean.money/).
 
 Read more about [Beanstalk](https://bean.money/docs/beanstalk.pdf)
 
-An SPC Hackathon project (🥇 Deep Tech Category Winner)
+An [SPC Hackathon](https://lu.ma/december-blockchain-hackathon) project (🥇 Deep Tech Category Winner)
 
 ![alt text](https://github.com/jw122/bean-pods/blob/main/public/screenshot-ui.png)
 
