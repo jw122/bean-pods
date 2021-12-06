@@ -1,4 +1,4 @@
-# Pods AMM
+# Beanstalk Pods AMM
 Instant liquidity for buying and selling [Beanstalk Pods](https://bean.money/).
 
 Read more about [Beanstalk](https://bean.money/docs/beanstalk.pdf)
@@ -13,19 +13,12 @@ An SPC Hackathon project (🥇 Deep Tech Category Winner)
 
 ## Team
 [Ken](https://twitter.com/kenadia)
-
 [Aki](https://twitter.com/heyitaki)
-
 [Sam](https://twitter.com/samclearman)
-
 [Cat](https://twitter.com/0xcatwu)
-
 [Emma](https://twitter.com/emmaytang)
-
 [Greg](https://twitter.com/gkossakowski)
-
 [Raymond](https://twitter.com/raymondzhong)
-
 [Julia](https://twitter.com/thejuliawu)
 
 ## Overview
