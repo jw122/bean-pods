@@ -1,21 +1,32 @@
 # Pods AMM
 Instant liquidity for buying and selling [Beanstalk Pods](https://bean.money/).
-Read more about [Beanstalk](https://bean.money/docs/beanstalk.pdf)
-An SPC Hackathon project (🥇 Winner of the Deep Tech prize)
-## Demo
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/HkYmaVIzVUs)
+Read more about [Beanstalk](https://bean.money/docs/beanstalk.pdf)
+
+An SPC Hackathon project (🥇 Deep Tech Category Winner)
+
+![alt text](https://github.com/jw122/bean-pods/blob/main/public/screenshot-ui.png)
+
+## Demo
+[View on YouTube](https://youtu.be/HkYmaVIzVUs)
 
 
 ## Team
-[Ken](https://twitter.com/kenadia) 
-[Aki](https://twitter.com/heyitaki) 
-[Sam](https://twitter.com/samclearman) 
-[Cat](https://twitter.com/0xcatwu) 
-[Emma](https://twitter.com/emmaytang) 
-Greg
-[Raymond](https://twitter.com/raymondzhong) 
-[Julia](https://twitter.com/thejuliawu) 
+[Ken](https://twitter.com/kenadia)
+
+[Aki](https://twitter.com/heyitaki)
+
+[Sam](https://twitter.com/samclearman)
+
+[Cat](https://twitter.com/0xcatwu)
+
+[Emma](https://twitter.com/emmaytang)
+
+[Greg](https://twitter.com/gkossakowski)
+
+[Raymond](https://twitter.com/raymondzhong)
+
+[Julia](https://twitter.com/thejuliawu)
 
 ## Overview
 By [Ken](https://github.com/Kenadia)
