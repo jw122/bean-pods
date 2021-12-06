@@ -338,8 +338,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>Welcome! {userAccount}</p>
-        <p>You have {plotCount} plots.</p>
+        <h1 class="display-1 title">wPod {userAccount}</h1>
+        <h3>The AMM for Bean Pods</h3>
+        <p>You have {plotCount} plot(s)</p>
+
         {plotIds.map((pid) => (
           <div>
             <input
@@ -352,8 +354,15 @@ function App() {
             <label for={plotId}>{pid}</label>
           </div>
         ))}
-        <button onClick={getListOfSows}>Get my plots</button>
-        <button onClick={wrapPlot}>Wrap Plot</button>
+        <div className="plotInteraction">
+          <button type="button" class="btn btn-dark" onClick={getListOfSows}>
+            Get my plots
+          </button>
+
+          <button type="button" class="btn btn-light" onClick={wrapPlot}>
+            Wrap Pods
+          </button>
+        </div>
         <br />
         {/* <button onClick={getBalance}>Get Balance</button> */}
       </header>
