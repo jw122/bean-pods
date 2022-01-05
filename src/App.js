@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import WPOD from "./artifacts/contracts/WPOD.sol/WPOD.json";
 const wPodAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -253,16 +253,46 @@ const diamondAbi = [
     stateMutability: "nonpayable",
     type: "constructor",
   },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "beans",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pods",
+        "type": "uint256"
+      }
+    ],
+    "name": "Sow",
+    "type": "event"
+  },
   { stateMutability: "payable", type: "fallback" },
   { stateMutability: "payable", type: "receive" },
 ];
 
 function App() {
-  const [plotIds, setPlotIds] = useState([]);
+  const [plots, setPlots] = useState({});
   const [plotId, setPlotId] = useState();
-  const [userAccount, setUserAccount] = useState();
+  const [userAddress, setUserAddress] = useState();
   const [amount, setAmount] = useState();
-  const [plotCount, setPlots] = useState();
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const BeanProtocolContract = new ethers.Contract(
@@ -277,14 +307,20 @@ function App() {
     provider
   );
 
-  const getListOfSows = async (accountAddress, plotId, beans, pods) => {
+  // const getListOfSows = async (accountAddress, plotId, beans, pods) => {
+  const getListOfSows = async () => {
+    if (!userAddress) {
+      console.log('No address');
+      return;
+    }
     console.log("bean protocol contarct: ", BeanProtocolContract);
-    console.log("diamond contarct: ", diamondContract);
-    console.log(accountAddress);
+    console.log("diamond contract: ", diamondContract);
+    console.log("address", userAddress);
 
     let filters = BeanProtocolContract.filters;
     console.log("filers", filters);
-    let filter = filters.Sow("0x5ab883168ab03c97239cef348d5483fb2b57afd9");
+    // let filter = filters.Sow("0x5ab883168ab03c97239cef348d5483fb2b57afd9");
+    let filter = filters.Sow(userAddress);
     console.log("filter: ", filter);
 
     const totalPods = await BeanProtocolContract.totalPods();
@@ -293,20 +329,24 @@ function App() {
     const sowEvents = await diamondContract.queryFilter(filter, 0, "latest");
     console.log("SOW EVENTS", sowEvents);
 
-    const plotIds = [];
+    const plots = {};
     sowEvents.forEach(function (event) {
       console.log("current event: ", event);
       const txHash = event.transactionIndex;
-      // const plotTxHash = txHash.substring(0, 10) + "...";
-      plotIds.push(txHash);
+      plots[txHash] = {
+        id: txHash,
+        position: event.args[1].toNumber(),
+        pods: event.args[3].toNumber(),
+        event: event,
+      }
     });
-    console.log("current plot ids: ", plotIds);
-    setPlots(sowEvents.length);
-    setPlotIds(plotIds);
-    // loop through the sow events and log their transaction hash
+    setPlots(plots);
   };
 
-  console.log("list of sow events: ", getListOfSows);
+  useEffect(() => {
+    const f = async () => { await getListOfSows() };
+    f();
+  }, [userAddress])
 
   async function requestAccount() {
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -335,27 +375,61 @@ function App() {
     }
   }
 
+  function _resetState() {
+    setPlots({});
+    setPlotId(null);
+    setUserAddress(null);
+    setAmount(null);
+  }
+
+  function _initialize(userAddress) {
+    setUserAddress(userAddress);
+  }
+
+  async function  connectWallet() {
+    const [selectedAddress] = await window.ethereum.enable();
+    _initialize(selectedAddress);
+
+    window.ethereum.on("accountsChanged", ([newAddress]) => {
+      this._stopPollingData();
+      // `accountsChanged` event can be triggered with an undefined newAddress.
+      // This happens when the user removes the Dapp from the "Connected
+      // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
+      // To avoid errors, we reset the dapp state 
+      if (newAddress === undefined) {
+        return this._resetState();
+      }
+      
+      this._initialize(newAddress);
+    });
+    
+    // We reset the dapp state if the network is changed
+    window.ethereum.on("networkChanged", ([networkId]) => {
+      _resetState();
+    });
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <h1 class="display-1 title">wPod {userAccount}</h1>
+      <h1 class="display-1 title">wPod {userAddress.slice(0,4)}...{userAddress.slice(38,42)}</h1>
         <h3>The AMM for Bean Pods</h3>
-        <p>You have {plotCount} plot(s)</p>
+        <p>You have {Object.keys(plots).length} plot(s)</p>
 
-        {plotIds.map((pid) => (
+        {Object.values(plots).map((info) => (
           <div>
             <input
               onChange={(e) => setPlotId(e.target.value)}
               type="radio"
-              id={`plot_${pid}`}
+              id={`plot_${info.id}`}
               name="plotId"
-              value={pid}
+              value={info.id}
             />
-            <label for={plotId}>{pid}</label>
+            <label for={info.id}>{info.pods} pods at position {info.position}</label>
           </div>
         ))}
         <div className="plotInteraction">
-          <button type="button" class="btn btn-dark" onClick={getListOfSows}>
+      <button type="button" class="btn btn-dark" onClick={connectWallet}>
             Get my plots
           </button>
 
