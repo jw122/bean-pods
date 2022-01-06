@@ -409,10 +409,11 @@ function App() {
     });
   }
 
+  const shortAddress = userAddress ? `${userAddress.slice(0,4)}...${userAddress.slice(38,42)}` : '';
   return (
     <div className="App">
       <header className="App-header">
-      <h1 class="display-1 title">wPod {userAddress.slice(0,4)}...{userAddress.slice(38,42)}</h1>
+      <h1 class="display-1 title">wPod {shortAddress}</h1>
         <h3>The AMM for Bean Pods</h3>
         <p>You have {Object.keys(plots).length} plot(s)</p>
 
